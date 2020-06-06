@@ -63,8 +63,16 @@ app.post("/api/persons", (req, res) =>{
         number: body.number,
         id: generateId()
     }
-    persons = persons.concat(newPerson);
-    res.json(persons)
+    const existedPerson = persons.find(person => person.name.toLowerCase() === body.name.toLowerCase());
+
+        if (!body.name || !body.number){
+            return res.status(400).json({ error: "name or number is missing" });
+        }else if(existedPerson){
+            return res.status(400).json({ error: "name must be unique" });
+        }else{
+            persons = [newPerson, ...persons]
+            return res.json(persons);
+        }
 })
 
 
