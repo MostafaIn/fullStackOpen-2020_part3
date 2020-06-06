@@ -1,7 +1,10 @@
 const express = require('express')
 const app = express()
+const morgan = require('morgan')
 
 app.use(express.json())
+
+app.use(morgan('tiny'))
 
 let persons = [
     {
@@ -57,7 +60,7 @@ const generateId = () =>{
 
 app.post("/api/persons", (req, res) =>{
     const body = req.body;
-    console.log(body)
+    // console.log(body)
     const newPerson ={
         name: body.name,
         number: body.number,
