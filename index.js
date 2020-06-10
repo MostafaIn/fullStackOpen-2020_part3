@@ -67,21 +67,31 @@ app.delete("/api/persons/:id", (req, res, next) => {
 //     return Math.floor(Math.random()*0x10000)
 // }
 
-app.post("/api/persons", (req, res) =>{
+app.post("/api/persons", (req, res, next) =>{
     const body = req.body;
     // console.log(body)
     if (body.name === undefined) {
         return response.status(400).json({ error: 'name missing' })
     }
 
-    const person =new Person({
-        name: body.name,
-        number: body.number
-    })
-
-    person.save().then( savedPerson =>{
-        res.json(savedPerson)
-    })
+    Person.find({name: body.name})
+    .then( result =>{
+        if(result.length){
+            res.status(404).send({error: `${body.name} already is in the phonebook`})
+        }else{
+            const person =new Person({
+                name: body.name,
+                number: body.number
+            })
+        
+            person.save()
+            .then( savedPerson => savedPerson.toJSON())
+            .then( savedAndFormattedPerson =>{
+                res.json(savedAndFormattedPerson)
+            })
+            .catch( err => next(err))
+        }
+    })  
 })
 
 app.put("/api/persons/:id",(req, res, next) =>{
@@ -108,7 +118,9 @@ const errorHandler = (err, req, res, next) => {
     // console.error(err.message)
     if (err.name === 'CastError' && err.kind == 'ObjectId') {
       return res.status(400).send({ error: 'malformatted id' })
-    } 
+    }else if(err.name === 'ValidationError'){
+        return res.status(400).json({error: err.message})
+    }
     next(err)
 };
   
