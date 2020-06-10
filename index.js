@@ -33,7 +33,7 @@ app.get('/api/persons', (req, res) =>{
 
 app.get("/info", (req, res) => {
     Person.find({}).then( persons =>{
-        let count = persons.map(person =>person.toJSON()).length
+        let count = persons.length
         res.send(`
         <div>
         <h3>Phonebook has info for ${count} people</h3>
