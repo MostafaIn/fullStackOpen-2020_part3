@@ -73,25 +73,18 @@ app.post("/api/persons", (req, res, next) =>{
     if (body.name === undefined) {
         return response.status(400).json({ error: 'name missing' })
     }
-
-    Person.find({name: body.name})
-    .then( result =>{
-        if(result.length){
-            res.status(404).send({error: `${body.name} already is in the phonebook`})
-        }else{
-            const person =new Person({
-                name: body.name,
-                number: body.number
-            })
+    
+    const person =new Person({
+        name: body.name,
+        number: body.number
+    })
         
-            person.save()
-            .then( savedPerson => savedPerson.toJSON())
-            .then( savedAndFormattedPerson =>{
-                res.json(savedAndFormattedPerson)
-            })
-            .catch( err => next(err))
-        }
-    })  
+        person.save()
+        .then( savedPerson => savedPerson.toJSON())
+        .then( savedAndFormattedPerson =>{
+            res.json(savedAndFormattedPerson)
+        })
+        .catch( err => next(err))
 })
 
 app.put("/api/persons/:id",(req, res, next) =>{
