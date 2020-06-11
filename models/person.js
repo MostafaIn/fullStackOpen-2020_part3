@@ -1,15 +1,15 @@
 const mongoose = require('mongoose')
 const uniqValidator = require('mongoose-unique-validator')
 
-mongoose.set('useFindAndModify', false)
-
 const url = process.env.MONGODB_URI
 
 console.log('connecting to', url)
 
 mongoose.connect(url, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+    useFindAndModify: false
 }).then( result =>{
     console.log('connected to mongoDB!')
 }).catch( err =>{
@@ -19,13 +19,22 @@ mongoose.connect(url, {
 const personSchema = new mongoose.Schema({
     name: {
         type: String,
-        minlength: 5,
+        minlength: 3,
         unique: true,
-        required: true
+        required: true,
+        validate: (v)=>{
+            return /^[A-Za-z]+$/.test(v)
+        }
     },
     number:{
-        type: String,
-        required: true
+        type: Number,
+        min:8,
+        required: true,
+        validate:{
+            validator: (v)=>{
+                return /\d{8}/.test(v)
+            }
+        }
     }
 })
 
